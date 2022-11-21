@@ -515,52 +515,52 @@ class Formatter {
                 else if (testSummary.stats.passed > 0) {
                     testReport.testStatus = 'success';
                 }
-                chapterSummary.content.push('### Test Summary');
-                for (const [groupIdentifier, group] of Object.entries(testSummary.groups)) {
-                    const anchorName = (0, markdown_1.anchorIdentifier)(groupIdentifier);
-                    const anchorTag = (0, markdown_1.anchorNameTag)(`${groupIdentifier}_summary`);
-                    chapterSummary.content.push(`#### ${anchorTag}[${groupIdentifier}](${anchorName})\n`);
-                    const runDestination = chapter.runDestination;
-                    chapterSummary.content.push(`- **Device:** ${runDestination.targetDeviceRecord.modelName}, ${runDestination.targetDeviceRecord.operatingSystemVersionWithBuildNumber}`);
-                    chapterSummary.content.push(`- **SDK:** ${runDestination.targetSDKRecord.name}, ${runDestination.targetSDKRecord.operatingSystemVersion}`);
-                    chapterSummary.content.push('<table>');
-                    chapterSummary.content.push('<tr>');
-                    const header = [
-                        `<th>Test`,
-                        `<th>Total`,
-                        `<th>${passedIcon}`,
-                        `<th>${failedIcon}`,
-                        `<th>${skippedIcon}`,
-                        `<th>${expectedFailureIcon}`
-                    ].join('');
-                    chapterSummary.content.push(header);
-                    for (const [identifier, stats] of Object.entries(group)) {
-                        chapterSummary.content.push('<tr>');
-                        const testClass = `${testClassIcon}&nbsp;${identifier}`;
-                        const testClassAnchor = (0, markdown_1.anchorNameTag)(`${groupIdentifier}_${identifier}_summary`);
-                        const anchorName = (0, markdown_1.anchorIdentifier)(`${groupIdentifier}_${identifier}`);
-                        const testClassLink = `<a href="${anchorName}">${testClass}</a>`;
-                        let failedCount;
-                        if (stats.failed > 0) {
-                            failedCount = `<b>${stats.failed}</b>`;
-                        }
-                        else {
-                            failedCount = `${stats.failed}`;
-                        }
-                        const cols = [
-                            `<td align="left" width="368px">${testClassAnchor}${testClassLink}`,
-                            `<td align="right" width="80px">${stats.total}`,
-                            `<td align="right" width="80px">${stats.passed}`,
-                            `<td align="right" width="80px">${failedCount}`,
-                            `<td align="right" width="80px">${stats.skipped}`,
-                            `<td align="right" width="80px">${stats.expectedFailure}`
-                        ].join('');
-                        chapterSummary.content.push(cols);
-                    }
-                    chapterSummary.content.push('');
-                    chapterSummary.content.push('</table>\n');
-                }
-                chapterSummary.content.push('---\n');
+                // chapterSummary.content.push('### Test Summary');
+                // for (const [groupIdentifier, group] of Object.entries(testSummary.groups)) {
+                //     const anchorName = (0, markdown_1.anchorIdentifier)(groupIdentifier);
+                //     const anchorTag = (0, markdown_1.anchorNameTag)(`${groupIdentifier}_summary`);
+                //     chapterSummary.content.push(`#### ${anchorTag}[${groupIdentifier}](${anchorName})\n`);
+                //     const runDestination = chapter.runDestination;
+                //     chapterSummary.content.push(`- **Device:** ${runDestination.targetDeviceRecord.modelName}, ${runDestination.targetDeviceRecord.operatingSystemVersionWithBuildNumber}`);
+                //     chapterSummary.content.push(`- **SDK:** ${runDestination.targetSDKRecord.name}, ${runDestination.targetSDKRecord.operatingSystemVersion}`);
+                //     chapterSummary.content.push('<table>');
+                //     chapterSummary.content.push('<tr>');
+                //     const header = [
+                //         `<th>Test`,
+                //         `<th>Total`,
+                //         `<th>${passedIcon}`,
+                //         `<th>${failedIcon}`,
+                //         `<th>${skippedIcon}`,
+                //         `<th>${expectedFailureIcon}`
+                //     ].join('');
+                //     chapterSummary.content.push(header);
+                //     for (const [identifier, stats] of Object.entries(group)) {
+                //         chapterSummary.content.push('<tr>');
+                //         const testClass = `${testClassIcon}&nbsp;${identifier}`;
+                //         const testClassAnchor = (0, markdown_1.anchorNameTag)(`${groupIdentifier}_${identifier}_summary`);
+                //         const anchorName = (0, markdown_1.anchorIdentifier)(`${groupIdentifier}_${identifier}`);
+                //         const testClassLink = `<a href="${anchorName}">${testClass}</a>`;
+                //         let failedCount;
+                //         if (stats.failed > 0) {
+                //             failedCount = `<b>${stats.failed}</b>`;
+                //         }
+                //         else {
+                //             failedCount = `${stats.failed}`;
+                //         }
+                //         const cols = [
+                //             `<td align="left" width="368px">${testClassAnchor}${testClassLink}`,
+                //             `<td align="right" width="80px">${stats.total}`,
+                //             `<td align="right" width="80px">${stats.passed}`,
+                //             `<td align="right" width="80px">${failedCount}`,
+                //             `<td align="right" width="80px">${stats.skipped}`,
+                //             `<td align="right" width="80px">${stats.expectedFailure}`
+                //         ].join('');
+                //         chapterSummary.content.push(cols);
+                //     }
+                //     chapterSummary.content.push('');
+                //     chapterSummary.content.push('</table>\n');
+                // }
+                // chapterSummary.content.push('---\n');
                 const testFailures = new report_1.TestFailures();
                 const annotations = [];
                 for (const [, results] of Object.entries(chapter.sections)) {
@@ -2938,9 +2938,9 @@ function checkArtifactName(name) {
     for (const [invalidCharacterKey, errorMessageForCharacter] of invalidArtifactNameCharacters) {
         if (name.includes(invalidCharacterKey)) {
             throw new Error(`Artifact name is not valid: ${name}. Contains the following character: ${errorMessageForCharacter}
-          
+
 Invalid characters include: ${Array.from(invalidArtifactNameCharacters.values()).toString()}
-          
+
 These characters are not allowed in the artifact name due to limitations with certain file systems such as NTFS. To maintain file system agnostic behavior, these characters are intentionally not allowed to prevent potential problems with downloads on different file systems.`);
         }
     }
@@ -2957,9 +2957,9 @@ function checkArtifactFilePath(path) {
     for (const [invalidCharacterKey, errorMessageForCharacter] of invalidArtifactFilePathCharacters) {
         if (path.includes(invalidCharacterKey)) {
             throw new Error(`Artifact path is not valid: ${path}. Contains the following character: ${errorMessageForCharacter}
-          
+
 Invalid characters include: ${Array.from(invalidArtifactFilePathCharacters.values()).toString()}
-          
+
 The following characters are not allowed in files that are uploaded due to limitations with certain file systems such as NTFS. To maintain file system agnostic behavior, these characters are intentionally not allowed to prevent potential problems with downloads on different file systems.
           `);
         }
@@ -3718,7 +3718,7 @@ function getUploadSpecification(artifactName, rootDirectory, artifactFiles) {
     rootDirectory = path_1.resolve(rootDirectory);
     /*
        Example to demonstrate behavior
-       
+
        Input:
          artifactName: my-artifact
          rootDirectory: '/home/user/files/plz-upload'
@@ -3727,7 +3727,7 @@ function getUploadSpecification(artifactName, rootDirectory, artifactFiles) {
            '/home/user/files/plz-upload/file2.txt',
            '/home/user/files/plz-upload/dir/file3.txt'
          ]
-       
+
        Output:
          specifications: [
            ['/home/user/files/plz-upload/file1.txt', 'my-artifact/file1.txt'],
@@ -3752,7 +3752,7 @@ function getUploadSpecification(artifactName, rootDirectory, artifactFiles) {
             /*
               uploadFilePath denotes where the file will be uploaded in the file container on the server. During a run, if multiple artifacts are uploaded, they will all
               be saved in the same container. The artifact name is used as the root directory in the container to separate and distinguish uploaded artifacts
-      
+
               path.join handles all the following cases and would return 'artifact-name/file-to-upload.txt
                 join('artifact-name/', 'file-to-upload.txt')
                 join('artifact-name/', '/file-to-upload.txt')
@@ -4630,8 +4630,8 @@ class OidcClient {
             const res = yield httpclient
                 .getJson(id_token_url)
                 .catch(error => {
-                throw new Error(`Failed to get ID Token. \n 
-        Error Code : ${error.statusCode}\n 
+                throw new Error(`Failed to get ID Token. \n
+        Error Code : ${error.statusCode}\n
         Error Message: ${error.result.message}`);
             });
             const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
@@ -24959,7 +24959,7 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/ 	
+/******/
 /******/ 	// The require function
 /******/ 	function __nccwpck_require__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -24973,7 +24973,7 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/ 	
+/******/
 /******/ 		// Execute the module function
 /******/ 		var threw = true;
 /******/ 		try {
@@ -24982,24 +24982,24 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 		} finally {
 /******/ 			if(threw) delete __webpack_module_cache__[moduleId];
 /******/ 		}
-/******/ 	
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/ 	
+/******/
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat */
-/******/ 	
+/******/
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
-/******/ 	
+/******/
 /************************************************************************/
-/******/ 	
+/******/
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
 /******/ 	var __webpack_exports__ = __nccwpck_require__(3109);
 /******/ 	module.exports = __webpack_exports__;
-/******/ 	
+/******/
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map
