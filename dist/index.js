@@ -643,9 +643,9 @@ class Formatter {
                     chapterSummary.content.push(summaryFailures.join('\n'));
                     chapterSummary.content.push('');
                 }
-                else {
-                    chapterSummary.content.push('All tests passed :tada:\n');
-                }
+                // else {
+                //     chapterSummary.content.push('All tests passed :tada:\n');
+                // }
                 if (testReport.codeCoverage && options.showCodeCoverage) {
                     const workspace = path.dirname(`${testReport.creatingWorkspaceFilePath}`);
                     chapterSummary.content.push('---\n');
