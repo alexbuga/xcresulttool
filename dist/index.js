@@ -643,9 +643,9 @@ class Formatter {
                     chapterSummary.content.push(summaryFailures.join('\n'));
                     chapterSummary.content.push('');
                 }
-                // else {
-                //     chapterSummary.content.push('All tests passed :tada:\n');
-                // }
+                else {
+                    chapterSummary.content.push('All tests passed :tada:\n');
+                }
                 if (testReport.codeCoverage && options.showCodeCoverage) {
                     const workspace = path.dirname(`${testReport.creatingWorkspaceFilePath}`);
                     chapterSummary.content.push('---\n');
@@ -658,321 +658,321 @@ class Formatter {
                     }
                     chapterSummary.content.push(testReport.codeCoverage.lines.join('\n').replace(re, root));
                 }
-                const testDetails = new report_1.TestDetails();
-                for (const [, results] of Object.entries(chapter.sections)) {
-                    const testDetail = new report_1.TestDetail();
-                    testDetails.details.push(testDetail);
-                    const testResultSummaryName = results.summary.name;
-                    const anchorTag = (0, markdown_1.anchorNameTag)(`${testResultSummaryName}`);
-                    const anchorName = (0, markdown_1.anchorIdentifier)(`${testResultSummaryName}_summary`);
-                    testDetail.lines.push(`#### ${anchorTag}${testResultSummaryName}[${backIcon}](${anchorName})`);
-                    testDetail.lines.push('');
-                    const detailGroup = results.details.reduce((groups, detail) => {
-                        const d = detail;
-                        if (d.group) {
-                            if (groups[d.group]) {
-                                groups[d.group].push(detail);
-                            }
-                            else {
-                                groups[d.group] = [detail];
-                            }
-                        }
-                        return groups;
-                    }, {});
-                    for (const [identifier, details] of Object.entries(detailGroup)) {
-                        const groupIdentifier = identifier;
-                        const [passed, failed, skipped, expectedFailure, total, duration] = details.reduce(([passed, failed, skipped, expectedFailure, total, duration], detail) => {
-                            const test = detail;
-                            switch (test.testStatus) {
-                                case 'Success':
-                                    passed++;
-                                    break;
-                                case 'Failure':
-                                    failed++;
-                                    break;
-                                case 'Skipped':
-                                    skipped++;
-                                    break;
-                                case 'Expected Failure':
-                                    expectedFailure++;
-                                    break;
-                            }
-                            total++;
-                            if (test.duration) {
-                                duration = test.duration;
-                            }
-                            return [
-                                passed,
-                                failed,
-                                skipped,
-                                expectedFailure,
-                                total,
-                                duration
-                            ];
-                        }, [0, 0, 0, 0, 0, 0]);
-                        const testName = `${groupIdentifier}`;
-                        const passedRate = ((passed / total) * 100).toFixed(0);
-                        const failedRate = ((failed / total) * 100).toFixed(0);
-                        const skippedRate = ((skipped / total) * 100).toFixed(0);
-                        const expectedFailureRate = ((expectedFailure / total) * 100).toFixed(0);
-                        const testDuration = duration.toFixed(2);
-                        const anchorTag = (0, markdown_1.anchorNameTag)(`${testResultSummaryName}_${groupIdentifier}`);
-                        const anchorName = (0, markdown_1.anchorIdentifier)(`${testResultSummaryName}_${groupIdentifier}_summary`);
-                        const anchorBack = `[${backIcon}](${anchorName})`;
-                        testDetail.lines.push(`${anchorTag}<h5>${testName}&nbsp;${anchorBack}</h5>`);
-                        const testsStatsLines = [];
-                        testsStatsLines.push('<table>');
-                        testsStatsLines.push('<tr>');
-                        const header = [
-                            `<th>${passedIcon}`,
-                            `<th>${failedIcon}`,
-                            `<th>${skippedIcon}`,
-                            `<th>${expectedFailureIcon}`,
-                            `<th>:stopwatch:`
-                        ].join('');
-                        testsStatsLines.push(header);
-                        testsStatsLines.push('<tr>');
-                        let failedCount;
-                        if (failed > 0) {
-                            failedCount = `<b>${failed} (${failedRate}%)</b>`;
-                        }
-                        else {
-                            failedCount = `${failed} (${failedRate}%)`;
-                        }
-                        const cols = [
-                            `<td align="right" width="154px">${passed} (${passedRate}%)`,
-                            `<td align="right" width="154px">${failedCount}`,
-                            `<td align="right" width="154px">${skipped} (${skippedRate}%)`,
-                            `<td align="right" width="154px">${expectedFailure} (${expectedFailureRate}%)`,
-                            `<td align="right" width="154px">${testDuration}s`
-                        ].join('');
-                        testsStatsLines.push(cols);
-                        testsStatsLines.push('</table>\n');
-                        testDetail.lines.push(testsStatsLines.join('\n'));
-                        const testDetailTable = [];
-                        testDetailTable.push(`<table>`);
-                        const configurationGroup = details.reduce((groups, detail) => {
-                            if (detail.identifier) {
-                                if (groups[detail.identifier]) {
-                                    groups[detail.identifier].push(detail);
-                                }
-                                else {
-                                    groups[detail.identifier] = [detail];
-                                }
-                            }
-                            return groups;
-                        }, {});
-                        for (const [, details] of Object.entries(configurationGroup)) {
-                            const statuses = details.map(detail => {
-                                const test = detail;
-                                return test.testStatus;
-                            });
-                            let groupStatus = '';
-                            if (statuses.length) {
-                                if (statuses.every(status => status === 'Success')) {
-                                    groupStatus = 'Success';
-                                }
-                                else if (statuses.every(status => status === 'Failure')) {
-                                    groupStatus = 'Failure';
-                                }
-                                else if (statuses.every(status => status === 'Skipped')) {
-                                    groupStatus = 'Skipped';
-                                }
-                                else if (statuses.every(status => status === 'Expected Failure')) {
-                                    groupStatus = 'Expected Failure';
-                                }
-                                else {
-                                    if (statuses
-                                        .filter(status => status !== 'Skipped')
-                                        .some(status => status === 'Failure')) {
-                                        groupStatus = 'Mixed Failure';
-                                    }
-                                    else if (statuses
-                                        .filter(status => status !== 'Skipped')
-                                        .filter(status => status !== 'Expected Failure')
-                                        .every(status => status === 'Success')) {
-                                        groupStatus = 'Mixed Success';
-                                    }
-                                    else {
-                                        groupStatus = 'Expected Failure';
-                                    }
-                                }
-                            }
-                            const groupStatusImage = Image.testStatus(groupStatus);
-                            let skippedPassedTests = 0;
-                            for (const [index, detail] of details.entries()) {
-                                const testResult = detail;
-                                if (!testResult.testStatus) {
-                                    continue;
-                                }
-                                const isFailure = testResult.testStatus === 'Failure';
-                                const rowSpan = `rowspan="${details.length}"`;
-                                const valign = `valign="top"`;
-                                const colWidth = 'width="52px"';
-                                const detailWidth = 'width="716px"';
-                                const status = Image.testStatus(testResult.testStatus);
-                                const resultLines = [];
-                                if (testResult.summaryRef) {
-                                    const summary = yield this.parser.parse(testResult.summaryRef.id);
-                                    if (summary.configuration) {
-                                        if (testResult.name) {
-                                            const anchorTag = (0, markdown_1.anchorNameTag)(`${testResultSummaryName}_${testResult.identifier}`);
-                                            const testMethodAnchor = isFailure ? anchorTag : '';
-                                            const backAnchorName = (0, markdown_1.anchorIdentifier)(`${testResultSummaryName}_${testResult.identifier}_failure-summary`);
-                                            const backAnchorLink = isFailure
-                                                ? `<a href="${backAnchorName}">${backIcon}</a>`
-                                                : '';
-                                            const testMethod = `${testMethodAnchor}${testMethodIcon}&nbsp;<code>${testResult.name}</code>${backAnchorLink}`;
-                                            resultLines.push(`${status} ${testMethod}`);
-                                        }
-                                        if (!options.showPassedTests && !isFailure) {
-                                            skippedPassedTests++;
-                                            continue;
-                                        }
-                                        const configuration = summary.configuration;
-                                        const configurationValues = configuration.values.storage
-                                            .map(value => {
-                                            return `${value.key}: ${value.value}`;
-                                        })
-                                            .join(', ');
-                                        resultLines.push(`<br><b>Configuration:</b><br><code>${configurationValues}</code>`);
-                                    }
-                                    else {
-                                        if (!options.showPassedTests && !isFailure) {
-                                            continue;
-                                        }
-                                        if (testResult.name) {
-                                            const anchorTag = (0, markdown_1.anchorNameTag)(`${testResultSummaryName}_${testResult.identifier}`);
-                                            const testMethodAnchor = isFailure ? anchorTag : '';
-                                            const backAnchorName = (0, markdown_1.anchorIdentifier)(`${testResultSummaryName}_${testResult.identifier}_failure-summary`);
-                                            const backAnchorLink = isFailure
-                                                ? `<a href="${backAnchorName}">${backIcon}</a>`
-                                                : '';
-                                            const testMethod = `${testMethodAnchor}${testMethodIcon}&nbsp;<code>${testResult.name}</code>${backAnchorLink}`;
-                                            resultLines.push(`${testMethod}`);
-                                        }
-                                    }
-                                    const activities = [];
-                                    if (summary.activitySummaries) {
-                                        yield this.collectActivities(summary.activitySummaries, activities);
-                                    }
-                                    if (activities.length) {
-                                        if (!options.showPassedTests &&
-                                            summary.testStatus !== 'Failure') {
-                                            continue;
-                                        }
-                                        const testActivities = activities
-                                            .map(activity => {
-                                            const attachments = activity.attachments
-                                                .filter(attachment => {
-                                                return attachment.dimensions;
-                                            })
-                                                .map(attachment => {
-                                                let width = '100%';
-                                                const dimensions = attachment.dimensions;
-                                                if (dimensions.width && dimensions.height) {
-                                                    const orientation = dimensions.orientation;
-                                                    if (orientation && orientation >= 5) {
-                                                        width = `${dimensions.height}px`;
-                                                    }
-                                                    else {
-                                                        width = `${dimensions.width}px`;
-                                                    }
-                                                }
-                                                const userInfo = attachment.userInfo;
-                                                if (userInfo) {
-                                                    for (const info of userInfo.storage) {
-                                                        if (info.key === 'Scale') {
-                                                            const scale = parseInt(`${info.value}`);
-                                                            if (dimensions.width && dimensions.height) {
-                                                                if (dimensions.orientation &&
-                                                                    dimensions.orientation >= 5) {
-                                                                    const value = dimensions.height / scale;
-                                                                    width = `${value.toFixed(0)}px`;
-                                                                }
-                                                                else {
-                                                                    const value = dimensions.width / scale;
-                                                                    width = `${value.toFixed(0)}px`;
-                                                                }
-                                                            }
-                                                            else {
-                                                                width = `${(100 / scale).toFixed(0)}%`;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                const widthAttr = `width="${width}"`;
-                                                return `<div><img ${widthAttr} src="${attachment.link}"></div>`;
-                                            });
-                                            if (attachments.length) {
-                                                const testStatus = testResult.testStatus;
-                                                const open = testStatus.includes('Failure')
-                                                    ? 'open'
-                                                    : '';
-                                                const title = (0, markdown_1.escapeHashSign)(activity.title);
-                                                const message = `${(0, markdown_1.indentation)(activity.indent)}- ${title}`;
-                                                const attachmentIndent = (0, markdown_1.indentation)(activity.indent + 1);
-                                                const attachmentContent = attachments.join('');
-                                                return `${message}\n${attachmentIndent}<details ${open}><summary>${attachmentIcon}</summary>${attachmentContent}</details>\n`;
-                                            }
-                                            else {
-                                                const indent = (0, markdown_1.indentation)(activity.indent);
-                                                return `${indent}- ${(0, markdown_1.escapeHashSign)(activity.title)}`;
-                                            }
-                                        })
-                                            .join('\n');
-                                        resultLines.push(`<br><b>Activities:</b>\n\n${testActivities}`);
-                                    }
-                                }
-                                else {
-                                    if (!options.showPassedTests && !isFailure) {
-                                        continue;
-                                    }
-                                    if (testResult.name) {
-                                        const anchorTag = (0, markdown_1.anchorNameTag)(`${testResultSummaryName}_${testResult.identifier}`);
-                                        const testMethodAnchor = isFailure ? anchorTag : '';
-                                        const backAnchorName = (0, markdown_1.anchorIdentifier)(`${testResultSummaryName}_${testResult.identifier}_failure-summary`);
-                                        const backAnchorLink = isFailure
-                                            ? `<a href="${backAnchorName}">${backIcon}</a>`
-                                            : '';
-                                        const testMethod = `${testMethodAnchor}${testMethodIcon}&nbsp;<code>${testResult.name}</code>${backAnchorLink}`;
-                                        resultLines.push(`${testMethod}`);
-                                    }
-                                }
-                                const testResultContent = resultLines.join('<br>');
-                                let testResultRow = '';
-                                if (details.length > 1) {
-                                    if (index - skippedPassedTests === 0) {
-                                        testResultRow = `<tr><td align="center" ${rowSpan} ${valign} ${colWidth}>${groupStatusImage}<td ${valign} ${detailWidth}>${testResultContent}`;
-                                    }
-                                    else {
-                                        testResultRow = `<tr><td ${valign} ${detailWidth}>${testResultContent}`;
-                                    }
-                                }
-                                else {
-                                    testResultRow = `<tr><td align="center" ${valign} ${colWidth}>${status}<td ${valign} ${detailWidth}>${testResultContent}`;
-                                }
-                                testDetailTable.push(testResultRow);
-                            }
-                        }
-                        testDetailTable.push(`</table>`);
-                        testDetailTable.push('');
-                        if (testDetailTable.join('').trim() === '<table></table>') {
-                            testDetail.lines.push('All tests passed :tada:\n');
-                        }
-                        else {
-                            testDetail.lines.push(testDetailTable.join('\n'));
-                        }
-                    }
-                }
-                const chapterDetail = new report_1.TestReportChapterDetail();
-                chapter.details.push(chapterDetail);
-                chapterDetail.content.push(testDetails.header);
-                for (const testDetail of testDetails.details) {
-                    for (const detail of testDetail.lines) {
-                        chapterDetail.content.push(detail);
-                    }
-                }
+                // const testDetails = new report_1.TestDetails();
+                // for (const [, results] of Object.entries(chapter.sections)) {
+                //     const testDetail = new report_1.TestDetail();
+                //     testDetails.details.push(testDetail);
+                //     const testResultSummaryName = results.summary.name;
+                //     const anchorTag = (0, markdown_1.anchorNameTag)(`${testResultSummaryName}`);
+                //     const anchorName = (0, markdown_1.anchorIdentifier)(`${testResultSummaryName}_summary`);
+                //     testDetail.lines.push(`#### ${anchorTag}${testResultSummaryName}[${backIcon}](${anchorName})`);
+                //     testDetail.lines.push('');
+                //     const detailGroup = results.details.reduce((groups, detail) => {
+                //         const d = detail;
+                //         if (d.group) {
+                //             if (groups[d.group]) {
+                //                 groups[d.group].push(detail);
+                //             }
+                //             else {
+                //                 groups[d.group] = [detail];
+                //             }
+                //         }
+                //         return groups;
+                //     }, {});
+                //     for (const [identifier, details] of Object.entries(detailGroup)) {
+                //         const groupIdentifier = identifier;
+                //         const [passed, failed, skipped, expectedFailure, total, duration] = details.reduce(([passed, failed, skipped, expectedFailure, total, duration], detail) => {
+                //             const test = detail;
+                //             switch (test.testStatus) {
+                //                 case 'Success':
+                //                     passed++;
+                //                     break;
+                //                 case 'Failure':
+                //                     failed++;
+                //                     break;
+                //                 case 'Skipped':
+                //                     skipped++;
+                //                     break;
+                //                 case 'Expected Failure':
+                //                     expectedFailure++;
+                //                     break;
+                //             }
+                //             total++;
+                //             if (test.duration) {
+                //                 duration = test.duration;
+                //             }
+                //             return [
+                //                 passed,
+                //                 failed,
+                //                 skipped,
+                //                 expectedFailure,
+                //                 total,
+                //                 duration
+                //             ];
+                //         }, [0, 0, 0, 0, 0, 0]);
+                //         const testName = `${groupIdentifier}`;
+                //         const passedRate = ((passed / total) * 100).toFixed(0);
+                //         const failedRate = ((failed / total) * 100).toFixed(0);
+                //         const skippedRate = ((skipped / total) * 100).toFixed(0);
+                //         const expectedFailureRate = ((expectedFailure / total) * 100).toFixed(0);
+                //         const testDuration = duration.toFixed(2);
+                //         const anchorTag = (0, markdown_1.anchorNameTag)(`${testResultSummaryName}_${groupIdentifier}`);
+                //         const anchorName = (0, markdown_1.anchorIdentifier)(`${testResultSummaryName}_${groupIdentifier}_summary`);
+                //         const anchorBack = `[${backIcon}](${anchorName})`;
+                //         testDetail.lines.push(`${anchorTag}<h5>${testName}&nbsp;${anchorBack}</h5>`);
+                //         const testsStatsLines = [];
+                //         testsStatsLines.push('<table>');
+                //         testsStatsLines.push('<tr>');
+                //         const header = [
+                //             `<th>${passedIcon}`,
+                //             `<th>${failedIcon}`,
+                //             `<th>${skippedIcon}`,
+                //             `<th>${expectedFailureIcon}`,
+                //             `<th>:stopwatch:`
+                //         ].join('');
+                //         testsStatsLines.push(header);
+                //         testsStatsLines.push('<tr>');
+                //         let failedCount;
+                //         if (failed > 0) {
+                //             failedCount = `<b>${failed} (${failedRate}%)</b>`;
+                //         }
+                //         else {
+                //             failedCount = `${failed} (${failedRate}%)`;
+                //         }
+                //         const cols = [
+                //             `<td align="right" width="154px">${passed} (${passedRate}%)`,
+                //             `<td align="right" width="154px">${failedCount}`,
+                //             `<td align="right" width="154px">${skipped} (${skippedRate}%)`,
+                //             `<td align="right" width="154px">${expectedFailure} (${expectedFailureRate}%)`,
+                //             `<td align="right" width="154px">${testDuration}s`
+                //         ].join('');
+                //         testsStatsLines.push(cols);
+                //         testsStatsLines.push('</table>\n');
+                //         testDetail.lines.push(testsStatsLines.join('\n'));
+                //         const testDetailTable = [];
+                //         testDetailTable.push(`<table>`);
+                //         const configurationGroup = details.reduce((groups, detail) => {
+                //             if (detail.identifier) {
+                //                 if (groups[detail.identifier]) {
+                //                     groups[detail.identifier].push(detail);
+                //                 }
+                //                 else {
+                //                     groups[detail.identifier] = [detail];
+                //                 }
+                //             }
+                //             return groups;
+                //         }, {});
+                //         for (const [, details] of Object.entries(configurationGroup)) {
+                //             const statuses = details.map(detail => {
+                //                 const test = detail;
+                //                 return test.testStatus;
+                //             });
+                //             let groupStatus = '';
+                //             if (statuses.length) {
+                //                 if (statuses.every(status => status === 'Success')) {
+                //                     groupStatus = 'Success';
+                //                 }
+                //                 else if (statuses.every(status => status === 'Failure')) {
+                //                     groupStatus = 'Failure';
+                //                 }
+                //                 else if (statuses.every(status => status === 'Skipped')) {
+                //                     groupStatus = 'Skipped';
+                //                 }
+                //                 else if (statuses.every(status => status === 'Expected Failure')) {
+                //                     groupStatus = 'Expected Failure';
+                //                 }
+                //                 else {
+                //                     if (statuses
+                //                         .filter(status => status !== 'Skipped')
+                //                         .some(status => status === 'Failure')) {
+                //                         groupStatus = 'Mixed Failure';
+                //                     }
+                //                     else if (statuses
+                //                         .filter(status => status !== 'Skipped')
+                //                         .filter(status => status !== 'Expected Failure')
+                //                         .every(status => status === 'Success')) {
+                //                         groupStatus = 'Mixed Success';
+                //                     }
+                //                     else {
+                //                         groupStatus = 'Expected Failure';
+                //                     }
+                //                 }
+                //             }
+                //             const groupStatusImage = Image.testStatus(groupStatus);
+                //             let skippedPassedTests = 0;
+                //             for (const [index, detail] of details.entries()) {
+                //                 const testResult = detail;
+                //                 if (!testResult.testStatus) {
+                //                     continue;
+                //                 }
+                //                 const isFailure = testResult.testStatus === 'Failure';
+                //                 const rowSpan = `rowspan="${details.length}"`;
+                //                 const valign = `valign="top"`;
+                //                 const colWidth = 'width="52px"';
+                //                 const detailWidth = 'width="716px"';
+                //                 const status = Image.testStatus(testResult.testStatus);
+                //                 const resultLines = [];
+                //                 if (testResult.summaryRef) {
+                //                     const summary = yield this.parser.parse(testResult.summaryRef.id);
+                //                     if (summary.configuration) {
+                //                         if (testResult.name) {
+                //                             const anchorTag = (0, markdown_1.anchorNameTag)(`${testResultSummaryName}_${testResult.identifier}`);
+                //                             const testMethodAnchor = isFailure ? anchorTag : '';
+                //                             const backAnchorName = (0, markdown_1.anchorIdentifier)(`${testResultSummaryName}_${testResult.identifier}_failure-summary`);
+                //                             const backAnchorLink = isFailure
+                //                                 ? `<a href="${backAnchorName}">${backIcon}</a>`
+                //                                 : '';
+                //                             const testMethod = `${testMethodAnchor}${testMethodIcon}&nbsp;<code>${testResult.name}</code>${backAnchorLink}`;
+                //                             resultLines.push(`${status} ${testMethod}`);
+                //                         }
+                //                         if (!options.showPassedTests && !isFailure) {
+                //                             skippedPassedTests++;
+                //                             continue;
+                //                         }
+                //                         const configuration = summary.configuration;
+                //                         const configurationValues = configuration.values.storage
+                //                             .map(value => {
+                //                             return `${value.key}: ${value.value}`;
+                //                         })
+                //                             .join(', ');
+                //                         resultLines.push(`<br><b>Configuration:</b><br><code>${configurationValues}</code>`);
+                //                     }
+                //                     else {
+                //                         if (!options.showPassedTests && !isFailure) {
+                //                             continue;
+                //                         }
+                //                         if (testResult.name) {
+                //                             const anchorTag = (0, markdown_1.anchorNameTag)(`${testResultSummaryName}_${testResult.identifier}`);
+                //                             const testMethodAnchor = isFailure ? anchorTag : '';
+                //                             const backAnchorName = (0, markdown_1.anchorIdentifier)(`${testResultSummaryName}_${testResult.identifier}_failure-summary`);
+                //                             const backAnchorLink = isFailure
+                //                                 ? `<a href="${backAnchorName}">${backIcon}</a>`
+                //                                 : '';
+                //                             const testMethod = `${testMethodAnchor}${testMethodIcon}&nbsp;<code>${testResult.name}</code>${backAnchorLink}`;
+                //                             resultLines.push(`${testMethod}`);
+                //                         }
+                //                     }
+                //                     const activities = [];
+                //                     if (summary.activitySummaries) {
+                //                         yield this.collectActivities(summary.activitySummaries, activities);
+                //                     }
+                //                     if (activities.length) {
+                //                         if (!options.showPassedTests &&
+                //                             summary.testStatus !== 'Failure') {
+                //                             continue;
+                //                         }
+                //                         const testActivities = activities
+                //                             .map(activity => {
+                //                             const attachments = activity.attachments
+                //                                 .filter(attachment => {
+                //                                 return attachment.dimensions;
+                //                             })
+                //                                 .map(attachment => {
+                //                                 let width = '100%';
+                //                                 const dimensions = attachment.dimensions;
+                //                                 if (dimensions.width && dimensions.height) {
+                //                                     const orientation = dimensions.orientation;
+                //                                     if (orientation && orientation >= 5) {
+                //                                         width = `${dimensions.height}px`;
+                //                                     }
+                //                                     else {
+                //                                         width = `${dimensions.width}px`;
+                //                                     }
+                //                                 }
+                //                                 const userInfo = attachment.userInfo;
+                //                                 if (userInfo) {
+                //                                     for (const info of userInfo.storage) {
+                //                                         if (info.key === 'Scale') {
+                //                                             const scale = parseInt(`${info.value}`);
+                //                                             if (dimensions.width && dimensions.height) {
+                //                                                 if (dimensions.orientation &&
+                //                                                     dimensions.orientation >= 5) {
+                //                                                     const value = dimensions.height / scale;
+                //                                                     width = `${value.toFixed(0)}px`;
+                //                                                 }
+                //                                                 else {
+                //                                                     const value = dimensions.width / scale;
+                //                                                     width = `${value.toFixed(0)}px`;
+                //                                                 }
+                //                                             }
+                //                                             else {
+                //                                                 width = `${(100 / scale).toFixed(0)}%`;
+                //                                             }
+                //                                         }
+                //                                     }
+                //                                 }
+                //                                 const widthAttr = `width="${width}"`;
+                //                                 return `<div><img ${widthAttr} src="${attachment.link}"></div>`;
+                //                             });
+                //                             if (attachments.length) {
+                //                                 const testStatus = testResult.testStatus;
+                //                                 const open = testStatus.includes('Failure')
+                //                                     ? 'open'
+                //                                     : '';
+                //                                 const title = (0, markdown_1.escapeHashSign)(activity.title);
+                //                                 const message = `${(0, markdown_1.indentation)(activity.indent)}- ${title}`;
+                //                                 const attachmentIndent = (0, markdown_1.indentation)(activity.indent + 1);
+                //                                 const attachmentContent = attachments.join('');
+                //                                 return `${message}\n${attachmentIndent}<details ${open}><summary>${attachmentIcon}</summary>${attachmentContent}</details>\n`;
+                //                             }
+                //                             else {
+                //                                 const indent = (0, markdown_1.indentation)(activity.indent);
+                //                                 return `${indent}- ${(0, markdown_1.escapeHashSign)(activity.title)}`;
+                //                             }
+                //                         })
+                //                             .join('\n');
+                //                         resultLines.push(`<br><b>Activities:</b>\n\n${testActivities}`);
+                //                     }
+                //                 }
+                //                 else {
+                //                     if (!options.showPassedTests && !isFailure) {
+                //                         continue;
+                //                     }
+                //                     if (testResult.name) {
+                //                         const anchorTag = (0, markdown_1.anchorNameTag)(`${testResultSummaryName}_${testResult.identifier}`);
+                //                         const testMethodAnchor = isFailure ? anchorTag : '';
+                //                         const backAnchorName = (0, markdown_1.anchorIdentifier)(`${testResultSummaryName}_${testResult.identifier}_failure-summary`);
+                //                         const backAnchorLink = isFailure
+                //                             ? `<a href="${backAnchorName}">${backIcon}</a>`
+                //                             : '';
+                //                         const testMethod = `${testMethodAnchor}${testMethodIcon}&nbsp;<code>${testResult.name}</code>${backAnchorLink}`;
+                //                         resultLines.push(`${testMethod}`);
+                //                     }
+                //                 }
+                //                 const testResultContent = resultLines.join('<br>');
+                //                 let testResultRow = '';
+                //                 if (details.length > 1) {
+                //                     if (index - skippedPassedTests === 0) {
+                //                         testResultRow = `<tr><td align="center" ${rowSpan} ${valign} ${colWidth}>${groupStatusImage}<td ${valign} ${detailWidth}>${testResultContent}`;
+                //                     }
+                //                     else {
+                //                         testResultRow = `<tr><td ${valign} ${detailWidth}>${testResultContent}`;
+                //                     }
+                //                 }
+                //                 else {
+                //                     testResultRow = `<tr><td align="center" ${valign} ${colWidth}>${status}<td ${valign} ${detailWidth}>${testResultContent}`;
+                //                 }
+                //                 testDetailTable.push(testResultRow);
+                //             }
+                //         }
+                //         testDetailTable.push(`</table>`);
+                //         testDetailTable.push('');
+                //         if (testDetailTable.join('').trim() === '<table></table>') {
+                //             testDetail.lines.push('All tests passed :tada:\n');
+                //         }
+                //         else {
+                //             testDetail.lines.push(testDetailTable.join('\n'));
+                //         }
+                //     }
+                // }
+                // const chapterDetail = new report_1.TestReportChapterDetail();
+                // chapter.details.push(chapterDetail);
+                // chapterDetail.content.push(testDetails.header);
+                // for (const testDetail of testDetails.details) {
+                //     for (const detail of testDetail.lines) {
+                //         chapterDetail.content.push(detail);
+                //     }
+                // }
             }
             return testReport;
         });
